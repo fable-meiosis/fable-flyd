@@ -51,14 +51,14 @@ module Flyd =
         abstract ap: ``value$``: Stream<'A> * ``transform$``: Stream<('A -> 'B)> -> Stream<'B>
         abstract ap: ``value$``: Stream<'A> -> (Stream<('A -> 'B)> -> Stream<'B>)
         abstract chain: accessor: ('T -> Stream<'V>) -> (Stream<'T> -> Stream<'V>)
-        // abstract chain: accessor: ('T -> Stream<'V>) * stream: Stream<'T> -> Stream<'V>
-        // abstract on: onfn: ('T -> unit) -> (Stream<'T> -> Stream<unit>)
-        // abstract on: onfn: ('T -> unit) * stream: Stream<'T> -> Stream<unit>
-        // abstract scan: reducer: ('T -> 'V -> 'T) * initial: 'T * stream: Stream<'V> -> Stream<'T>
-        // abstract scan: reducer: ('T -> 'V -> 'T) * initial: 'T -> (Stream<'V> -> Stream<'T>)
-        // abstract scan: reducer: ('T -> 'V -> 'T) -> ('T -> (Stream<'V> -> Stream<'T>))
-        // abstract merge: stream1: Stream<'T> * stream2: Stream<'V> -> Stream<U2<'T, 'V>>
-        // abstract merge: stream1: Stream<'T> -> (Stream<'V> -> Stream<U2<'T, 'V>>)
+        abstract chain: accessor: ('T -> Stream<'V>) * stream: Stream<'T> -> Stream<'V>
+        abstract on: onfn: ('T -> unit) -> (Stream<'T> -> Stream<unit>)
+        abstract on: onfn: ('T -> unit) * stream: Stream<'T> -> Stream<unit>
+        abstract scan: reducer: ('T -> 'V -> 'T) * initial: 'T * stream: Stream<'V> -> Stream<'T>
+        abstract scan: reducer: ('T -> 'V -> 'T) * initial: 'T -> (Stream<'V> -> Stream<'T>)
+        abstract scan: reducer: ('T -> 'V -> 'T) -> ('T -> (Stream<'V> -> Stream<'T>))
+        abstract merge: stream1: Stream<'T> * stream2: Stream<'V> -> Stream<U2<'T, 'V>>
+        abstract merge: stream1: Stream<'T> -> (Stream<'V> -> Stream<U2<'T, 'V>>)
         abstract transduce: mapfn: Function * stream: Stream<'T> -> Stream<'V>
         abstract transduce: mapfn: Function -> (Stream<'T> -> Stream<'V>)
         abstract fromPromise: promise: PromiseLike<'T> -> Stream<'T>

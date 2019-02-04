@@ -1,14 +1,18 @@
-# Fable flyd stream bindings: WIP
+# Fable flyd stream bindings
 
-Fable bindings for Flyd stream library.
+Fable bindings for [Flyd](https://github.com/paldepind/flyd), a minimalistic but powerful, modular, functional reactive programming library.
+
+## Why?
+
+Flyd can be used with the excellent [Meiosis pattern](https://meiosis.js.org/) as a building block for next gen _elmish_ like architecture.
 
 ## Status
 
-WIP: Not working yet!! Please help out ;)
+WIP: Not yet tested
 
-## Purpose
+## Overview
 
-This example aims to showcase how to create custom Fable bindings for JS libraries.
+This example aims to showcase how to create custom Fable bindings for a JS library.
 
 The initial bindings in `Flyd.fs` were created via [ts2fable](http://fable.io/ts2fable/) using the [Flyd index.d.ts](https://raw.githubusercontent.com/paldepind/flyd/master/index.d.ts) TypeScript definitoons file.
 
