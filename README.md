@@ -1,6 +1,12 @@
-# Fable flyd stream bindings
+# Fable flyd stream bindings: WIP
 
 Fable bindings for Flyd stream library.
+
+## Status
+
+WIP: Not working yet!! Please help out ;)
+
+## Purpose
 
 This example aims to showcase how to create custom Fable bindings for JS libraries.
 
