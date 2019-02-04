@@ -1,35 +1,17 @@
-module Flyd
+module rec MFlyd
 
 open Fable.Core
 open Fable.Core.JsInterop
-open Fable.Import.Browser
 
 // ts2fable 0.6.1
 open System
 open Fable.Core
 open Fable.Import.JS
 
-let [<Import("*","module")>] flyd: Flyd.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/droprepeats``: Flyd_module_droprepeats.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/every``: Flyd_module_every.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/filter``: Flyd_module_filter.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/forwardto``: Flyd_module_forwardto.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/inlast``: Flyd_module_inlast.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/keepwhen``: Flyd_module_keepwhen.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/lift``: Flyd_module_lift.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/mergeall``: Flyd_module_mergeall.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/obj``: Flyd_module_obj.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/previous``: Flyd_module_previous.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/sampleon``: Flyd_module_sampleon.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/scanmerge``: Flyd_module_scanmerge.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/switchlatest``: Flyd_module_switchlatest.IExports = jsNative
-let [<Import("*","module")>] ``flyd/module/takeuntil``: Flyd_module_takeuntil.IExports = jsNative
-
-type [<AllowNullLiteral>] CurriedFunction2<'T1, 'T2, 'R> =
+type [<AllowNullLiteral>] ICurriedFunction2<'T1, 'T2, 'R> =
     interface end
 
 module Flyd =
-
     type [<AllowNullLiteral>] Stream<'T> =
         [<Emit "$0($1...)">] abstract Invoke: unit -> 'T
         [<Emit "$0($1...)">] abstract Invoke: value: 'T -> Stream<'T>
@@ -48,15 +30,15 @@ module Flyd =
         abstract hasVal: bool with get, set
 
     type [<AllowNullLiteral>] Combine =
-        [<Emit "$0($1...)">] abstract Invoke: fn: (Stream<T> -> Stream<R> -> U2<R, unit>) * streams: Stream<T> -> Stream<R>
-        [<Emit "$0($1...)">] abstract Invoke: fn: (Stream<T> -> Stream<T1> -> Stream<R> -> U2<R, unit>) * streams: Stream<T> * Stream<T1> -> Stream<R>
-        [<Emit "$0($1...)">] abstract Invoke: fn: (Stream<T> -> Stream<T1> -> Stream<T2> -> Stream<R> -> U2<R, unit>) * streams: Stream<T> * Stream<T1> * Stream<T2> -> Stream<R>
-        [<Emit "$0($1...)">] abstract Invoke: fn: (Stream<T> -> Stream<T1> -> Stream<T2> -> Stream<T3> -> Stream<R> -> U2<R, unit>) * streams: Stream<T> * Stream<T1> * Stream<T2> * Stream<T3> -> Stream<R>
+        [<Emit "$0($1...)">] abstract Invoke: fn: (Stream<'T> -> Stream<'R> -> U2<'R, unit>) * streams: Stream<'T> -> Stream<'R>
+        [<Emit "$0($1...)">] abstract Invoke: fn: (Stream<'T> -> Stream<'T1> -> Stream<'R> -> U2<'R, unit>) * streams: Stream<'T> * Stream<'T1> -> Stream<'R>
+        [<Emit "$0($1...)">] abstract Invoke: fn: (Stream<'T> -> Stream<'T1> -> Stream<'T2> -> Stream<'R> -> U2<'R, unit>) * streams: Stream<'T> * Stream<'T1> * Stream<'T2> -> Stream<'R>
+        [<Emit "$0($1...)">] abstract Invoke: fn: (Stream<'T> -> Stream<'T1> -> Stream<'T2> -> Stream<'T3> -> Stream<'R> -> U2<'R, unit>) * streams: Stream<'T> * Stream<'T1> * Stream<'T2> * Stream<'T3> -> Stream<'R>
 
     type [<AllowNullLiteral>] CreateStream =
-        [<Emit "$0($1...)">] abstract Invoke: unit -> Stream<T>
-        [<Emit "$0($1...)">] abstract Invoke: value: T -> Stream<T>
-        [<Emit "$0($1...)">] abstract Invoke: value: U2<Promise<T>, PromiseLike<T>> -> Stream<T>
+        [<Emit "$0($1...)">] abstract Invoke: unit -> Stream<'T>
+        [<Emit "$0($1...)">] abstract Invoke: value: 'T -> Stream<'T>
+        [<Emit "$0($1...)">] abstract Invoke: value: U2<Promise<'T>, PromiseLike<'T>> -> Stream<'T>
 
     type [<AllowNullLiteral>] Static =
         abstract stream: CreateStream with get, set
@@ -69,163 +51,193 @@ module Flyd =
         abstract ap: ``value$``: Stream<'A> * ``transform$``: Stream<('A -> 'B)> -> Stream<'B>
         abstract ap: ``value$``: Stream<'A> -> (Stream<('A -> 'B)> -> Stream<'B>)
         abstract chain: accessor: ('T -> Stream<'V>) -> (Stream<'T> -> Stream<'V>)
-        abstract chain: accessor: ('T -> Stream<'V>) * stream: Stream<'T> -> Stream<'V>
-        abstract on: onfn: ('T -> unit) -> (Stream<'T> -> Stream<unit>)
-        abstract on: onfn: ('T -> unit) * stream: Stream<'T> -> Stream<unit>
-        abstract scan: reducer: ('T -> 'V -> 'T) * initial: 'T * stream: Stream<'V> -> Stream<'T>
-        abstract scan: reducer: ('T -> 'V -> 'T) * initial: 'T -> (Stream<'V> -> Stream<'T>)
-        abstract scan: reducer: ('T -> 'V -> 'T) -> ('T -> (Stream<'V> -> Stream<'T>))
-        abstract merge: stream1: Stream<'T> * stream2: Stream<'V> -> Stream<U2<'T, 'V>>
-        abstract merge: stream1: Stream<'T> -> (Stream<'V> -> Stream<U2<'T, 'V>>)
+        // abstract chain: accessor: ('T -> Stream<'V>) * stream: Stream<'T> -> Stream<'V>
+        // abstract on: onfn: ('T -> unit) -> (Stream<'T> -> Stream<unit>)
+        // abstract on: onfn: ('T -> unit) * stream: Stream<'T> -> Stream<unit>
+        // abstract scan: reducer: ('T -> 'V -> 'T) * initial: 'T * stream: Stream<'V> -> Stream<'T>
+        // abstract scan: reducer: ('T -> 'V -> 'T) * initial: 'T -> (Stream<'V> -> Stream<'T>)
+        // abstract scan: reducer: ('T -> 'V -> 'T) -> ('T -> (Stream<'V> -> Stream<'T>))
+        // abstract merge: stream1: Stream<'T> * stream2: Stream<'V> -> Stream<U2<'T, 'V>>
+        // abstract merge: stream1: Stream<'T> -> (Stream<'V> -> Stream<U2<'T, 'V>>)
         abstract transduce: mapfn: Function * stream: Stream<'T> -> Stream<'V>
         abstract transduce: mapfn: Function -> (Stream<'T> -> Stream<'V>)
         abstract fromPromise: promise: PromiseLike<'T> -> Stream<'T>
         abstract flattenPromise: ``promise$``: Stream<PromiseLike<'T>> -> Stream<'T>
         abstract curryN: length: float * fn: (Array<obj option> -> unit) -> Function
 
-module Flyd =
+        type [<AllowNullLiteral>] IExports =
+            abstract f: Flyd.Static
 
-    type [<AllowNullLiteral>] IExports =
-        abstract f: Flyd.Static
+    module MAfterSilence =
 
-module Flyd_module_aftersilence =
+        type [<AllowNullLiteral>] aftersilence =
+            [<Emit "$0($1...)">] abstract Invoke: delay: float * stream: Flyd.Stream<'T> -> Flyd.Stream<ResizeArray<'T>>
+            [<Emit "$0($1...)">] abstract Invoke: delay: float -> (Flyd.Stream<'T> -> Flyd.Stream<ResizeArray<'T>>)
 
-    type [<AllowNullLiteral>] aftersilence =
-        [<Emit "$0($1...)">] abstract Invoke: delay: float * stream: Flyd.Stream<T> -> Flyd.Stream<ResizeArray<T>>
-        [<Emit "$0($1...)">] abstract Invoke: delay: float -> (Flyd.Stream<T> -> Flyd.Stream<ResizeArray<T>>)
+    module MDropRepeats =
+        type [<AllowNullLiteral>] IExports =
+            abstract dropRepeats: dropRepeats
+            abstract dropRepeatsWith: dropRepeatsWith
 
-module Flyd_module_droprepeats =
+        type [<AllowNullLiteral>] dropRepeats =
+            [<Emit "$0($1...)">] abstract Invoke: s: Flyd.Stream<'T> -> Flyd.Stream<'T>
 
-    type [<AllowNullLiteral>] IExports =
-        abstract dropRepeats: dropRepeats
-        abstract dropRepeatsWith: dropRepeatsWith
+        type [<AllowNullLiteral>] dropRepeatsWith =
+            [<Emit "$0($1...)">] abstract Invoke: isEqual: ('T -> 'T -> bool) * stream: Flyd.Stream<'T> -> Flyd.Stream<'T>
+            [<Emit "$0($1...)">] abstract Invoke: isEqual: ('T -> 'T -> bool) -> (Flyd.Stream<'T> -> Flyd.Stream<'T>)
 
-    type [<AllowNullLiteral>] dropRepeats =
-        [<Emit "$0($1...)">] abstract Invoke: s: Flyd.Stream<T> -> Flyd.Stream<T>
+    module MAfterSilence =
 
-    type [<AllowNullLiteral>] dropRepeatsWith =
-        [<Emit "$0($1...)">] abstract Invoke: isEqual: (T -> T -> bool) * stream: Flyd.Stream<T> -> Flyd.Stream<T>
-        [<Emit "$0($1...)">] abstract Invoke: isEqual: (T -> T -> bool) -> (Flyd.Stream<T> -> Flyd.Stream<T>)
+        type [<AllowNullLiteral>] aftersilence =
+            [<Emit "$0($1...)">] abstract Invoke: delay: float * stream: Flyd.Stream<'T> -> Flyd.Stream<ResizeArray<'T>>
+            [<Emit "$0($1...)">] abstract Invoke: delay: float -> (Flyd.Stream<'T> -> Flyd.Stream<ResizeArray<'T>>)
 
-module Flyd_module_every =
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _every: every
+    module MDropRepeats =
+        type [<AllowNullLiteral>] IExports =
+            abstract dropRepeats: dropRepeats
+            abstract dropRepeatsWith: dropRepeatsWith
 
-    type [<AllowNullLiteral>] every =
-        [<Emit "$0($1...)">] abstract Invoke: ms: float -> Flyd.Stream<obj>
+        type [<AllowNullLiteral>] dropRepeats =
+            [<Emit "$0($1...)">] abstract Invoke: s: Flyd.Stream<'T> -> Flyd.Stream<'T>
 
-module Flyd_module_filter =
+        type [<AllowNullLiteral>] dropRepeatsWith =
+            [<Emit "$0($1...)">] abstract Invoke: isEqual: ('T -> 'T -> bool) * stream: Flyd.Stream<'T> -> Flyd.Stream<'T>
+            [<Emit "$0($1...)">] abstract Invoke: isEqual: ('T -> 'T -> bool) -> (Flyd.Stream<'T> -> Flyd.Stream<'T>)
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _Filter: Filter
+    module MEvery =
+        type [<AllowNullLiteral>] IExports =
+            abstract _every: every
 
-    type [<AllowNullLiteral>] Filter =
-        [<Emit "$0($1...)">] abstract Invoke: project: (T -> bool) * stream: Flyd.Stream<T> -> Flyd.Stream<V>
-        [<Emit "$0($1...)">] abstract Invoke: project: (T -> bool) -> (Flyd.Stream<T> -> Flyd.Stream<V>)
-        [<Emit "$0($1...)">] abstract Invoke: predicate: (T -> obj option) * stream: Flyd.Stream<T> -> Flyd.Stream<T>
-        [<Emit "$0($1...)">] abstract Invoke: predicate: (T -> obj option) -> (Flyd.Stream<T> -> Flyd.Stream<T>)
+        type [<AllowNullLiteral>] every =
+            [<Emit "$0($1...)">] abstract Invoke: ms: float -> Flyd.Stream<obj>
 
-module Flyd_module_forwardto =
+    module MFilter =
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _ForwardTo: ForwardTo
+        type [<AllowNullLiteral>] IExports =
+            abstract _Filter: Filter
 
-    type [<AllowNullLiteral>] ForwardTo =
-        [<Emit "$0($1...)">] abstract Invoke: stream: Flyd.Stream<V> * project: (V -> T) -> Flyd.Stream<T>
-        [<Emit "$0($1...)">] abstract Invoke: stream: Flyd.Stream<V> -> ((V -> 'T) -> Flyd.Stream<'T>)
+        type [<AllowNullLiteral>] Filter =
+            [<Emit "$0($1...)">] abstract Invoke: project: ('T -> bool) * stream: Flyd.Stream<'T> -> Flyd.Stream<'V>
+            [<Emit "$0($1...)">] abstract Invoke: project: ('T -> bool) -> (Flyd.Stream<'T> -> Flyd.Stream<'V>)
+            [<Emit "$0($1...)">] abstract Invoke: predicate: ('T -> obj option) * stream: Flyd.Stream<'T> -> Flyd.Stream<'T>
+            [<Emit "$0($1...)">] abstract Invoke: predicate: ('T -> obj option) -> (Flyd.Stream<'T> -> Flyd.Stream<'T>)
 
-module Flyd_module_inlast =
+    module MForwardTo =
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _InLast: InLast
+        type [<AllowNullLiteral>] IExports =
+            abstract _ForwardTo: ForwardTo
 
-    type [<AllowNullLiteral>] InLast =
-        [<Emit "$0($1...)">] abstract Invoke: ms: float * stream: Flyd.Stream<T> -> Flyd.Stream<ResizeArray<T>>
-        [<Emit "$0($1...)">] abstract Invoke: ms: float -> (Flyd.Stream<'T> -> Flyd.Stream<ResizeArray<'T>>)
+        type [<AllowNullLiteral>] ForwardTo =
+            [<Emit "$0($1...)">] abstract Invoke: stream: Flyd.Stream<'V> * project: ('V -> 'T) -> Flyd.Stream<'T>
+            [<Emit "$0($1...)">] abstract Invoke: stream: Flyd.Stream<'V> -> (('V -> 'T) -> Flyd.Stream<'T>)
 
-module Flyd_module_keepwhen =
+    module MInLast =
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _KeepWhen: KeepWhen
+        type [<AllowNullLiteral>] IExports =
+            abstract _InLast: InLast
 
-    type [<AllowNullLiteral>] KeepWhen =
-        [<Emit "$0($1...)">] abstract Invoke: ``when``: Flyd.Stream<bool> * stream: Flyd.Stream<T> -> Flyd.Stream<T>
-        [<Emit "$0($1...)">] abstract Invoke: ``when``: Flyd.Stream<bool> -> (Flyd.Stream<'T> -> Flyd.Stream<'T>)
+        type [<AllowNullLiteral>] InLast =
+            [<Emit "$0($1...)">] abstract Invoke: ms: float * stream: Flyd.Stream<'T> -> Flyd.Stream<ResizeArray<'T>>
+            [<Emit "$0($1...)">] abstract Invoke: ms: float -> (Flyd.Stream<'T> -> Flyd.Stream<ResizeArray<'T>>)
 
-module Flyd_module_lift =
+    module MKeepWhen =
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _Lift: Lift
+        type [<AllowNullLiteral>] IExports =
+            abstract _KeepWhen: KeepWhen
 
-    type [<AllowNullLiteral>] Lift =
-        [<Emit "$0($1...)">] abstract Invoke: liftFn: (T1 -> T2 -> R) * s1: Flyd.Stream<T1> * s2: Flyd.Stream<T2> -> Flyd.Stream<R>
-        [<Emit "$0($1...)">] abstract Invoke: liftFn: (T1 -> T2 -> T3 -> R) * s1: Flyd.Stream<T1> * s2: Flyd.Stream<T2> * s3: Flyd.Stream<T3> -> Flyd.Stream<R>
-        [<Emit "$0($1...)">] abstract Invoke: liftFn: (T1 -> T2 -> T3 -> T4 -> R) * s1: Flyd.Stream<T1> * s2: Flyd.Stream<T2> * s3: Flyd.Stream<T3> * s4: Flyd.Stream<T4> -> Flyd.Stream<R>
-        [<Emit "$0($1...)">] abstract Invoke: liftFn: (ResizeArray<obj option> -> T) * [<ParamArray>] streams: ResizeArray<Flyd.Stream<obj option>> -> Flyd.Stream<T>
+        type [<AllowNullLiteral>] KeepWhen =
+            [<Emit "$0($1...)">] abstract Invoke: ``when``: Flyd.Stream<bool> * stream: Flyd.Stream<'T> -> Flyd.Stream<'T>
+            [<Emit "$0($1...)">] abstract Invoke: ``when``: Flyd.Stream<bool> -> (Flyd.Stream<'T> -> Flyd.Stream<'T>)
 
-module Flyd_module_mergeall =
+    module MLift =
+        type [<AllowNullLiteral>] IExports =
+            abstract _Lift: Lift
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _MergeAll: MergeAll
+        type [<AllowNullLiteral>] Lift =
+            [<Emit "$0($1...)">] abstract Invoke: liftFn: ('T1 -> 'T2 -> 'R) * s1: Flyd.Stream<'T1> * s2: Flyd.Stream<'T2> -> Flyd.Stream<'R>
+            [<Emit "$0($1...)">] abstract Invoke: liftFn: ('T1 -> 'T2 -> 'T3 -> 'R) * s1: Flyd.Stream<'T1> * s2: Flyd.Stream<'T2> * s3: Flyd.Stream<'T3> -> Flyd.Stream<'R>
+            [<Emit "$0($1...)">] abstract Invoke: liftFn: ('T1 -> 'T2 -> 'T3 -> 'T4 -> 'R) * s1: Flyd.Stream<'T1> * s2: Flyd.Stream<'T2> * s3: Flyd.Stream<'T3> * s4: Flyd.Stream<'T4> -> Flyd.Stream<'R>
+            [<Emit "$0($1...)">] abstract Invoke: liftFn: (ResizeArray<obj option> -> 'T) * [<ParamArray>] streams: ResizeArray<Flyd.Stream<obj option>> -> Flyd.Stream<'T>
 
-    type [<AllowNullLiteral>] MergeAll =
-        [<Emit "$0($1...)">] abstract Invoke: streams: Flyd.Stream<T1> * Flyd.Stream<T2> -> Flyd.Stream<U2<T1, T2>>
-        [<Emit "$0($1...)">] abstract Invoke: streams: Flyd.Stream<T1> * Flyd.Stream<T2> * Flyd.Stream<T3> -> Flyd.Stream<U3<T1, T2, T3>>
-        [<Emit "$0($1...)">] abstract Invoke: streams: ResizeArray<Flyd.Stream<T>> -> Flyd.Stream<T>
+    module MMergeAll =
+        type [<AllowNullLiteral>] IExports =
+            abstract _MergeAll: MergeAll
 
-module Flyd_module_obj =
+        type [<AllowNullLiteral>] MergeAll =
+            [<Emit "$0($1...)">] abstract Invoke: streams: Flyd.Stream<'T1> * Flyd.Stream<'T2> -> Flyd.Stream<U2<'T1, 'T2>>
+            [<Emit "$0($1...)">] abstract Invoke: streams: Flyd.Stream<'T1> * Flyd.Stream<'T2> * Flyd.Stream<'T3> -> Flyd.Stream<U3<'T1, 'T2, 'T3>>
+            [<Emit "$0($1...)">] abstract Invoke: streams: ResizeArray<Flyd.Stream<'T>> -> Flyd.Stream<'T>
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _ObjModule: ObjModule
 
-    type [<AllowNullLiteral>] ObjModule =
-        abstract streamProps: obj: 'T -> obj
-        abstract stream: obj: 'T -> Flyd.Stream<obj>
-        abstract extractProps: obj: obj option -> obj option
+    module MObj =
 
-module Flyd_module_previous =
+        type [<AllowNullLiteral>] IExports =
+            abstract _ObjModule: ObjModule
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _previous: previous
+        type [<AllowNullLiteral>] ObjModule =
+            abstract streamProps: obj: 'T -> obj
+            abstract stream: obj: 'T -> Flyd.Stream<obj>
+            abstract extractProps: obj: obj option -> obj option
 
-    type [<AllowNullLiteral>] previous =
-        [<Emit "$0($1...)">] abstract Invoke: stream: Flyd.Stream<'T> -> Flyd.Stream<'T>
+    module MPrevious =
 
-module Flyd_module_sampleon =
+        type [<AllowNullLiteral>] IExports =
+            abstract _previous: Previous
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _SampleOn: SampleOn
+        type [<AllowNullLiteral>] Previous =
+            [<Emit "$0($1...)">] abstract Invoke: stream: Flyd.Stream<'T> -> Flyd.Stream<'T>
 
-    type [<AllowNullLiteral>] SampleOn =
-        [<Emit "$0($1...)">] abstract Invoke: samplewhen: Flyd.Stream<obj option> * stream: Flyd.Stream<T> -> Flyd.Stream<T>
-        [<Emit "$0($1...)">] abstract Invoke: samplewhen: Flyd.Stream<obj option> -> (Flyd.Stream<'T> -> Flyd.Stream<'T>)
+    module MSampleOn =
 
-module Flyd_module_scanmerge =
+        type [<AllowNullLiteral>] IExports =
+            abstract _SampleOn: SampleOn
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _ScanMerge: ScanMerge
+        type [<AllowNullLiteral>] SampleOn =
+            [<Emit "$0($1...)">] abstract Invoke: samplewhen: Flyd.Stream<obj option> * stream: Flyd.Stream<'T> -> Flyd.Stream<'T>
+            [<Emit "$0($1...)">] abstract Invoke: samplewhen: Flyd.Stream<obj option> -> (Flyd.Stream<'T> -> Flyd.Stream<'T>)
 
-    type [<AllowNullLiteral>] ScanFn<'T, 'V> =
-        [<Emit "$0($1...)">] abstract Invoke: acc: 'T * value: 'V -> 'T
+    module MScanMerge =
 
-    type [<AllowNullLiteral>] ScanMerge =
-        [<Emit "$0($1...)">] abstract Invoke: pairs: Array<Flyd.Stream<V> * ScanFn<T, V>> * initial: T -> Flyd.Stream<T>
-        [<Emit "$0($1...)">] abstract Invoke: pairs: Array<Flyd.Stream<V> * ScanFn<T, V>> -> (T -> Flyd.Stream<T>)
+        type [<AllowNullLiteral>] IExports =
+            abstract _ScanMerge: ScanMerge
 
-module Flyd_module_switchlatest =
+        type [<AllowNullLiteral>] ScanFn<'T, 'V> =
+            [<Emit "$0($1...)">] abstract Invoke: acc: 'T * value: 'V -> 'T
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _SwitchLatest: SwitchLatest
+        type [<AllowNullLiteral>] ScanMerge =
+            [<Emit "$0($1...)">] abstract Invoke: pairs: Array<Flyd.Stream<'V> * ScanFn<'T, 'V>> * initial: 'T -> Flyd.Stream<'T>
+            [<Emit "$0($1...)">] abstract Invoke: pairs: Array<Flyd.Stream<'V> * ScanFn<'T, 'V>> -> ('T -> Flyd.Stream<'T>)
 
-    type [<AllowNullLiteral>] SwitchLatest =
-        [<Emit "$0($1...)">] abstract Invoke: stream: Flyd.Stream<Flyd.Stream<T>> -> Flyd.Stream<T>
+    module MSwitchLatest =
 
-module Flyd_module_takeuntil =
+        type [<AllowNullLiteral>] IExports =
+            abstract _SwitchLatest: SwitchLatest
 
-    type [<AllowNullLiteral>] IExports =
-        abstract _takeuntil: takeuntil
+        type [<AllowNullLiteral>] SwitchLatest =
+            [<Emit "$0($1...)">] abstract Invoke: stream: Flyd.Stream<Flyd.Stream<'T>> -> Flyd.Stream<'T>
 
-    type [<AllowNullLiteral>] takeuntil =
-        [<Emit "$0($1...)">] abstract Invoke: source: Flyd.Stream<T> * ``end``: Flyd.Stream<V> -> Flyd.Stream<T>
-        [<Emit "$0($1...)">] abstract Invoke: source: Flyd.Stream<T> -> (Flyd.Stream<'V> -> Flyd.Stream<T>)
+    module MTakeUntil =
+
+        type [<AllowNullLiteral>] IExports =
+            abstract _takeuntil: takeuntil
+
+        type [<AllowNullLiteral>] takeuntil =
+            [<Emit "$0($1...)">] abstract Invoke: source: Flyd.Stream<'T> * ``end``: Flyd.Stream<'V> -> Flyd.Stream<'T>
+            [<Emit "$0($1...)">] abstract Invoke: source: Flyd.Stream<'T> -> (Flyd.Stream<'V> -> Flyd.Stream<'T>)
+
+let [<Import("*","module")>] flyd: Flyd.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/droprepeats``: Flyd.MDropRepeats.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/every``: Flyd.MEvery.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/filter``: Flyd.MFilter.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/forwardto``: Flyd.MForwardTo.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/inlast``: Flyd.MInLast.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/keepwhen``: Flyd.MKeepWhen.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/lift``: Flyd.MLift.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/mergeall``: Flyd.MMergeAll.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/obj``: Flyd.MObj.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/previous``: Flyd.MPrevious.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/sampleon``: Flyd.MSampleOn.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/scanmerge``: Flyd.MScanMerge.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/switchlatest``: Flyd.MSwitchLatest.IExports = jsNative
+let [<Import("*","module")>] ``flyd/module/takeuntil``: Flyd.MTakeUntil.IExports = jsNative

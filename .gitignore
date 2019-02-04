@@ -5,3 +5,4 @@ paket.restore.cached
 src/bin
 src/obj
 .paket/.store
+*.log
